@@ -40,7 +40,7 @@ public class StopNum : MonoBehaviour {
         if (running)
         {
             timeNum += Time.deltaTime;
-            countLable.text = AddLastZero(Get2float(timeNum).ToString());
+            countLable.text = AddLastZero(Get2float(timeNum).ToString()).Replace(".",":") ;
             //Debug.LogError("@@" + Get2float(timeNum).ToString() + "#ln:" + Get2float(timeNum).ToString().Length);
             
         }
