@@ -9,6 +9,9 @@ public class StopNum : MonoBehaviour {
     public Text btnText;
     public Text recordText;
     public Text marginText;
+    public Text FailText;
+    public Text SuccessText;
+    public Text NewRecordText;
 
     public float timeNum = 0.011f;
     public bool running = false;
@@ -22,6 +25,9 @@ public class StopNum : MonoBehaviour {
         }
         recordText.gameObject.SetActive(true);
         marginText.gameObject.SetActive(true);
+        SuccessText.gameObject.SetActive(false);
+        FailText.gameObject.SetActive(false);
+        NewRecordText.gameObject.SetActive(false);
         running = false;
         isClick = true;
         timeNum = PlayerPrefs.GetFloat("Record");
@@ -47,18 +53,24 @@ public class StopNum : MonoBehaviour {
             running = false;
             isClick = true;
             btnText.text = "Start";
-            if (CompareRecord(timeNum))
+            //10秒成功
+            if (Get2float(timeNum) == 10.00)
+            {
+                ShowWin();
+            }
+            else if (CompareRecord(timeNum))
             {
                 //新纪录
                 PlayerPrefs.SetFloat("Record",timeNum);
                 recordText.text = AddLastZero(Get2float(timeNum).ToString());
                 //误差
                 marginText.text = CompareBS(timeNum);
-                //10秒成功
-                if (Get2float(timeNum).ToString() == "10.00")
-                {
-                    ShowWin();
-                }
+                NewRecordText.gameObject.SetActive(true);
+            }
+            else
+            {
+                //失败
+                FailText.gameObject.SetActive(true);
             }
         }
         else {
@@ -66,6 +78,9 @@ public class StopNum : MonoBehaviour {
             running = true;
             isClick = false;
             btnText.text = "Stop";
+            SuccessText.gameObject.SetActive(false);
+            FailText.gameObject.SetActive(false);
+            NewRecordText.gameObject.SetActive(false);
         }
     }
 
@@ -149,5 +164,6 @@ public class StopNum : MonoBehaviour {
     {
         recordText.gameObject.SetActive(false);
         marginText.gameObject.SetActive(false);
+        SuccessText.gameObject.SetActive(true);
     }
 }
