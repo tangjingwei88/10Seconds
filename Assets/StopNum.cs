@@ -12,6 +12,13 @@ public class StopNum : MonoBehaviour {
     public Text FailText;
     public Text SuccessText;
     public Text NewRecordText;
+    public AudioSource audio;
+  //  public AudioSource btnSounds;
+
+    public AudioClip loseClip;
+    public AudioClip newRecordClip;
+    public AudioClip winClip;
+    public AudioClip btnClip;
 
     public float timeNum = 0.011f;
     public bool running = false;
@@ -24,14 +31,14 @@ public class StopNum : MonoBehaviour {
             PlayerPrefs.SetFloat("Record", 0.011f);
         }
         recordText.gameObject.SetActive(true);
-        marginText.gameObject.SetActive(true);
+       // marginText.gameObject.SetActive(true);
         SuccessText.gameObject.SetActive(false);
         FailText.gameObject.SetActive(false);
         NewRecordText.gameObject.SetActive(false);
         running = false;
         isClick = true;
         timeNum = PlayerPrefs.GetFloat("Record");
-        recordText.text = Get2float(timeNum).ToString() ;
+        recordText.text = Get2float(timeNum).ToString().Replace(".", ":");
         marginText.text = CompareBS(timeNum);
     }
 
@@ -39,20 +46,27 @@ public class StopNum : MonoBehaviour {
     {
         if (running)
         {
-            timeNum += Time.deltaTime;
-            countLable.text = AddLastZero(Get2float(timeNum).ToString()).Replace(".",":") ;
-            //Debug.LogError("@@" + Get2float(timeNum).ToString() + "#ln:" + Get2float(timeNum).ToString().Length);
-            
+            if (timeNum < 98)
+            {
+                timeNum += Time.deltaTime;
+                countLable.text = AddLastZero(Get2float(timeNum).ToString()).Replace(".", ":");
+            }
+            else {
+                timeNum = 0;
+            }
         }
     }
 
     public void OnClick()
     {
+        audio.Play();
         if (!isClick)
         {
+            audio.Stop();
             running = false;
             isClick = true;
-            btnText.text = "Start";
+            btnText.text = "START";
+            //timeNum = 10.00f;
             //10秒成功
             if (Get2float(timeNum) == 10.00)
             {
@@ -62,22 +76,25 @@ public class StopNum : MonoBehaviour {
             {
                 //新纪录
                 PlayerPrefs.SetFloat("Record",timeNum);
-                recordText.text = AddLastZero(Get2float(timeNum).ToString());
+                recordText.text = AddLastZero(Get2float(timeNum).ToString()).Replace(".", ":");
                 //误差
                 marginText.text = CompareBS(timeNum);
                 NewRecordText.gameObject.SetActive(true);
+                audio.PlayOneShot(newRecordClip);
             }
             else
             {
                 //失败
                 FailText.gameObject.SetActive(true);
+                audio.PlayOneShot(loseClip);
             }
         }
         else {
+            audio.Play();
             timeNum = 0.00f;
             running = true;
             isClick = false;
-            btnText.text = "Stop";
+            btnText.text = "STOP";
             SuccessText.gameObject.SetActive(false);
             FailText.gameObject.SetActive(false);
             NewRecordText.gameObject.SetActive(false);
@@ -156,14 +173,13 @@ public class StopNum : MonoBehaviour {
     {
         PlayerPrefs.SetFloat("Record", 0.011f);
         timeNum = PlayerPrefs.GetFloat("Record");
-        recordText.text = Get2float(timeNum).ToString();
+        recordText.text = Get2float(timeNum).ToString().Replace(".", ":");
         marginText.text = CompareBS(timeNum);
     }
 
     public void ShowWin()
     {
-        recordText.gameObject.SetActive(false);
-        marginText.gameObject.SetActive(false);
+        audio.PlayOneShot(winClip);
         SuccessText.gameObject.SetActive(true);
     }
 }
