@@ -7,6 +7,9 @@ public class StopNum : MonoBehaviour {
 
     public Text countLable;
     public Text btnText;
+    public GameObject startBtn;
+    public GameObject stopBtn;
+    public Image btnImage;
     public Text recordText;
     public Text marginText;
     public Text FailText;
@@ -19,6 +22,7 @@ public class StopNum : MonoBehaviour {
     public AudioClip newRecordClip;
     public AudioClip winClip;
     public AudioClip btnClip;
+    public AudioClip trashClip;
 
     public float timeNum = 0.011f;
     public bool running = false;
@@ -65,7 +69,9 @@ public class StopNum : MonoBehaviour {
             audio.Stop();
             running = false;
             isClick = true;
-            btnText.text = "START";
+            //btnText.text = "START";
+            ChangeBtn(BTNSTATE.start);
+
             //timeNum = 10.00f;
             //10秒成功
             if (Get2float(timeNum) == 10.00)
@@ -94,7 +100,8 @@ public class StopNum : MonoBehaviour {
             timeNum = 0.00f;
             running = true;
             isClick = false;
-            btnText.text = "STOP";
+            //btnText.text = "STOP";
+            ChangeBtn(BTNSTATE.stop);
             SuccessText.gameObject.SetActive(false);
             FailText.gameObject.SetActive(false);
             NewRecordText.gameObject.SetActive(false);
@@ -175,11 +182,33 @@ public class StopNum : MonoBehaviour {
         timeNum = PlayerPrefs.GetFloat("Record");
         recordText.text = Get2float(timeNum).ToString().Replace(".", ":");
         marginText.text = CompareBS(timeNum);
+        audio.PlayOneShot(trashClip);
     }
 
     public void ShowWin()
     {
         audio.PlayOneShot(winClip);
         SuccessText.gameObject.SetActive(true);
+        PlayerPrefs.SetFloat("Record", 10.00f);
+        recordText.text = "10:00";
+    }
+
+    public void ChangeBtn(BTNSTATE state)
+    {
+        if(state == BTNSTATE.start)
+        {
+            startBtn.gameObject.SetActive(true);
+            stopBtn.gameObject.SetActive(false);
+        }
+        else if(state == BTNSTATE.stop)
+        {
+            stopBtn.gameObject.SetActive(true);
+            startBtn.gameObject.SetActive(false);
+        }
+    }
+
+    public enum BTNSTATE{
+        start,
+        stop
     }
 }
